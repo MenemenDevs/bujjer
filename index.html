@@ -5,186 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>mutlu yasayan patatesler</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    body {
-      background: #f0f2f5;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .chat-container {
-      max-width: 800px;
-      margin: 0 auto;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      background: white;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    }
-    .chat-header {
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      color: white;
-      padding: 16px 20px;
-      font-size: 18px;
-      font-weight: bold;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .messages {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      background: #f0f2f5;
-    }
-    .message {
-      max-width: 75%;
-      padding: 12px 16px;
-      border-radius: 18px;
-      line-height: 1.4;
-      word-wrap: break-word;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .received {
-      align-self: flex-start;
-      background: #f1f1f1;
-      border-bottom-left-radius: 4px;
-    }
-    .sent {
-      align-self: flex-end;
-      background: #e3f2fd;
-      border-bottom-right-radius: 4px;
-    }
-    .message-info {
-      font-size: 11px;
-      color: #666;
-      margin-top: 5px;
-      opacity: 0.8;
-    }
-    .input-area {
-      display: flex;
-      padding: 12px;
-      background: white;
-      border-top: 1px solid #e6e6e6;
-    }
-    #message-input {
-      flex: 1;
-      padding: 14px;
-      border: 1px solid #ddd;
-      border-radius: 24px;
-      outline: none;
-      font-size: 16px;
-      min-height: 20px;
-    }
-    #send-btn {
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      margin-left: 10px;
-      cursor: pointer;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(106, 17, 203, 0.3);
-    }
-    .login-screen {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-      text-align: center;
-      padding: 20px;
-    }
-    .login-screen h2 {
-      color: #2575fc;
-      margin-bottom: 25px;
-      font-size: 26px;
-      font-weight: 700;
-    }
-    .login-screen input {
-      padding: 14px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 24px;
-      width: 80%;
-      max-width: 300px;
-      text-align: center;
-      margin-bottom: 20px;
-      outline: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    .login-screen button {
-      padding: 14px 36px;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      color: white;
-      border: none;
-      border-radius: 24px;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: 600;
-      box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
-    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background:#f0f2f5; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+    .chat-container { max-width:800px; margin:0 auto; width:100%; height:100%; display:flex; flex-direction:column; background:white; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+    .chat-header { background:linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color:white; padding:16px 20px; font-size:18px; font-weight:bold; text-align:center; position:sticky; top:0; z-index:10; display:flex; justify-content:space-between; align-items:center; }
+    .logout-btn { background:none; border:none; color:white; font-size:14px; cursor:pointer; padding:6px 12px; border-radius:4px; }
+    .messages { flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; background:#f0f2f5; }
+    .message { max-width:75%; padding:12px 16px; border-radius:18px; line-height:1.4; word-wrap:break-word; box-shadow:0 1px 2px rgba(0,0,0,0.05); }
+    .received { align-self:flex-start; background:#f1f1f1; border-bottom-left-radius:4px; }
+    .sent { align-self:flex-end; background:#e3f2fd; border-bottom-right-radius:4px; }
+    .message-info { font-size:11px; color:#666; margin-top:5px; opacity:0.8; }
+    .message img, .message video, .message audio { max-width:200px; max-height:200px; border-radius:8px; margin-top:6px; }
+    video, audio { width:100%; border-radius:8px; margin-top:6px; }
+    .input-area { display:flex; padding:12px; background:white; border-top:1px solid#e6e6e6; flex-wrap:wrap; gap:8px; }
+    #message-input { flex:1; min-width:150px; padding:14px; border:1px solid#ddd; border-radius:24px; outline:none; font-size:16px; }
+    .attach-btn { background:#6a11cb; color:white; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; }
+    #file-input { display:none; }
+    #stop-btn { background:red !important; display:none; }
+    .login-screen { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; background:linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%); padding:20px; }
+    .login-screen input { padding:14px; font-size:16px; border:1px solid#ccc; border-radius:24px; width:80%; max-width:300px; text-align:center; margin-bottom:20px; }
+    .login-screen button { padding:14px 36px; background:linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color:white; border:none; border-radius:24px; font-size:16px; cursor:pointer; font-weight:600; }
     @media (max-width: 600px) {
-      .chat-header {
-        font-size: 17px;
-        padding: 14px;
-      }
-      .message {
-        max-width: 85%;
-        padding: 12px;
-      }
-      #message-input {
-        padding: 14px;
-        font-size: 16px;
-      }
-      #send-btn {
-        width: 46px;
-        height: 46px;
-      }
+      .input-area { flex-direction:column; }
+      #message-input { order:2; }
+      .attach-buttons { order:1; display:flex; gap:8px; }
     }
   </style>
 </head>
 <body>
   <!-- Login Screen -->
   <div id="login-screen" class="login-screen">
-    <h2>🥔 mutlu yasayan patatesler</h2>
+    <h2 style="color:#2575fc; margin-bottom:25px; font-size:26px;">🥔 mutlu yasayan patatesler</h2>
     <input type="text" id="username-input" placeholder="Enter your name" maxlength="20" autocomplete="off" />
     <button onclick="setUsername()">Join Chat</button>
   </div>
 
   <!-- Chat Screen -->
-  <div id="chat-container" class="chat-container" style="display: none;">
-    <div class="chat-header">mutlu yasayan patatesler</div>
+  <div id="chat-container" class="chat-container" style="display:none;">
+    <div class="chat-header">
+      <span>mutlu yasayan patatesler</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
     <div id="messages" class="messages"></div>
+    
     <div class="input-area">
+      <div class="attach-buttons">
+        <button class="attach-btn" onclick="document.getElementById('file-input').click()">📎</button>
+        <button class="attach-btn" onclick="startRecording()">🎤</button>
+        <button class="attach-btn" id="stop-btn" onclick="stopRecording()">⏹️</button>
+      </div>
+      <input type="file" id="file-input" accept="image/*,video/*,audio/*" onchange="sendMedia(event)" />
       <input type="text" id="message-input" placeholder="Type a message..." />
-      <button id="send-btn" onclick="sendMessage()">➤</button>
+      <button id="send-btn" onclick="sendMessage()" style="background:linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color:white; border:none; border-radius:50%; width:48px; height:48px; margin-left:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;">➤</button>
     </div>
   </div>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
   <script>
-    // 🔥 Your Firebase Config (bujjer-fc359)
+    // 🔥 Your Firebase Config (NO TRAILING SPACES!)
     const firebaseConfig = {
       apiKey: "AIzaSyBfa-DU3esel55NPsyqv9KxF9Si4ZWeSDg",
       authDomain: "bujjer-fc359.firebaseapp.com",
@@ -192,97 +74,183 @@
       projectId: "bujjer-fc359",
       storageBucket: "bujjer-fc359.firebasestorage.app",
       messagingSenderId: "542057226185",
-      appId: "1:542057226185:web:7d0d7e70c0d84862531218",
-      measurementId: "G-J33VV28WZD"
+      appId: "1:542057226185:web:7d0d7e70c0d84862531218"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const db = firebase.database();
+    const storage = firebase.storage();
 
-    // DOM Elements
+    // DOM
     const loginScreen = document.getElementById('login-screen');
     const chatContainer = document.getElementById('chat-container');
     const usernameInput = document.getElementById('username-input');
     const messageInput = document.getElementById('message-input');
     const messagesDiv = document.getElementById('messages');
 
-    // On load: check saved username
+    // Voice recording
+    let mediaRecorder;
+    let audioChunks = [];
+
     window.onload = () => {
-      const savedName = localStorage.getItem('username');
-      if (savedName) {
-        usernameInput.value = savedName;
-        showChat();
-      } else {
-        usernameInput.focus();
-      }
+      const name = localStorage.getItem('username');
+      if (name) showChat(name);
     };
 
     function setUsername() {
       const name = usernameInput.value.trim();
       if (name) {
         localStorage.setItem('username', name);
-        showChat();
+        showChat(name);
       } else {
         alert("Please enter a name!");
       }
     }
 
-    function showChat() {
+    function showChat(name) {
       loginScreen.style.display = 'none';
       chatContainer.style.display = 'flex';
       messageInput.focus();
       loadMessages();
     }
 
+    function logout() {
+      localStorage.removeItem('username');
+      chatContainer.style.display = 'none';
+      loginScreen.style.display = 'flex';
+      usernameInput.value = '';
+      usernameInput.focus();
+    }
+
+    // === TEXT MESSAGES ===
     function sendMessage() {
       const text = messageInput.value.trim();
-      const username = localStorage.getItem('username');
-      if (text && username) {
-        database.ref('chats/mutlu-patatesler/messages').push({
-          text: text,
-          username: username,
+      const user = localStorage.getItem('username');
+      if (text && user) {
+        db.ref('chats/mutlu-patatesler/messages').push({
+          type: 'text',
+          text,
+          username: user,
           timestamp: firebase.database.ServerValue.TIMESTAMP
         });
         messageInput.value = '';
       }
     }
 
-    // Send on Enter (no shift)
-    messageInput.addEventListener('keypress', (e) => {
+    // === MEDIA (PHOTO/VIDEO/AUDIO) ===
+    function sendMedia(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const user = localStorage.getItem('username');
+      if (!user) return;
+
+      const type = file.type.startsWith('image') ? 'image' : 
+                   file.type.startsWith('video') ? 'video' : 
+                   file.type.startsWith('audio') ? 'audio' : null;
+      
+      if (!type) return;
+
+      const filePath = `media/${Date.now()}_${file.name}`;
+      const uploadTask = storage.ref(filePath).put(file);
+
+      uploadTask.on('state_changed', null, (err) => {
+        alert('Upload failed: ' + err.message);
+      }, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then(url => {
+          db.ref('chats/mutlu-patatesler/messages').push({
+            type,
+            url,
+            username: user,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+          });
+        });
+      });
+      e.target.value = '';
+    }
+
+    // === VOICE MESSAGES ===
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+          const user = localStorage.getItem('username');
+          if (!user) return;
+
+          const filePath = `media/voice_${Date.now()}.mp3`;
+          const uploadTask = storage.ref(filePath).put(blob);
+          uploadTask.on('state_changed', null, (err) => {
+            alert('Voice upload failed');
+          }, () => {
+            uploadTask.snapshot.ref.getDownloadURL().then(url => {
+              db.ref('chats/mutlu-patatesler/messages').push({
+                type: 'audio',
+                url,
+                username: user,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+              });
+            });
+          });
+        };
+
+        mediaRecorder.start();
+        document.querySelectorAll('.attach-btn')[1].style.display = 'none';
+        document.getElementById('stop-btn').style.display = 'flex';
+      } catch (err) {
+        alert('Microphone access denied. Please allow mic permission.');
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      }
+      document.querySelectorAll('.attach-btn')[1].style.display = 'flex';
+      document.getElementById('stop-btn').style.display = 'none';
+    }
+
+    // === ENTER KEY ===
+    messageInput.addEventListener('keypress', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
       }
     });
 
+    // === LOAD MESSAGES ===
     function loadMessages() {
-      const messagesRef = database.ref('chats/mutlu-patatesler/messages');
-      messagesRef.on('value', (snapshot) => {
+      db.ref('chats/mutlu-patatesler/messages').on('value', snap => {
         messagesDiv.innerHTML = '';
-        const data = snapshot.val();
-        if (data) {
-          const messages = Object.entries(data)
-            .map(([key, val]) => ({ id: key, ...val }))
-            .sort((a, b) => a.timestamp - b.timestamp);
+        const data = snap.val();
+        if (!data) return;
 
-          messages.forEach(msg => {
-            const time = new Date(msg.timestamp).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            });
-            const isSent = msg.username === localStorage.getItem('username');
-            
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${isSent ? 'sent' : 'received'}`;
-            msgDiv.innerHTML = `
-              <div>${msg.text}</div>
-              <div class="message-info">${msg.username} • ${time}</div>
-            `;
-            messagesDiv.appendChild(msgDiv);
-          });
-          messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
+        const msgs = Object.entries(data)
+          .map(([id, msg]) => ({ id, ...msg }))
+          .sort((a, b) => a.timestamp - b.timestamp);
+
+        msgs.forEach(msg => {
+          const time = new Date(msg.timestamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+          const isSent = msg.username === localStorage.getItem('username');
+          const div = document.createElement('div');
+          div.className = `message ${isSent ? 'sent' : 'received'}`;
+
+          if (msg.type === 'text') {
+            div.innerHTML = `<div>${msg.text}</div><div class="message-info">${msg.username} • ${time}</div>`;
+          } else if (msg.type === 'image') {
+            div.innerHTML = `<img src="${msg.url}" alt="Image" /><div class="message-info">${msg.username} • ${time}</div>`;
+          } else if (msg.type === 'video') {
+            div.innerHTML = `<video controls src="${msg.url}"></video><div class="message-info">${msg.username} • ${time}</div>`;
+          } else if (msg.type === 'audio') {
+            div.innerHTML = `<audio controls src="${msg.url}"></audio><div class="message-info">${msg.username} • ${time}</div>`;
+          }
+          messagesDiv.appendChild(div);
+        });
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
       });
     }
   </script>
