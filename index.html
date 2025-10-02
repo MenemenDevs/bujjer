@@ -1,336 +1,552 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>mutlu yasayan patatesler</title>
-  <style>
-    * { 
-      margin:0; padding:0; box-sizing:border-box; 
-      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; 
-    }
-    body { 
-      background:#e9eff5; height:100vh; display:flex; flex-direction:column; 
-    }
-    .chat-container { 
-      max-width:850px; margin:20px auto; width:100%; height:calc(100vh - 40px); 
-      display:flex; flex-direction:column; background:white; 
-      border-radius:20px; overflow:hidden; 
-      box-shadow:0 8px 24px rgba(0,0,0,0.12); 
-    }
-    .chat-header { 
-      background:linear-gradient(135deg, #6a11cb, #2575fc); 
-      color:white; padding:18px 22px; font-size:18px; font-weight:bold; 
-      display:flex; justify-content:space-between; align-items:center; 
-      position:sticky; top:0; z-index:10; 
-    }
-    .logout-btn { 
-      background:rgba(255,255,255,0.2); border:none; color:white; 
-      font-size:14px; cursor:pointer; padding:6px 14px; border-radius:20px; 
-      transition:0.3s; 
-    }
-    .logout-btn:hover { background:rgba(255,255,255,0.35); }
-
-    .messages { 
-      flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:14px; 
-      background:linear-gradient(180deg, #f5f7fa 0%, #eaf1f7 100%); 
-    }
-    .message { 
-      max-width:70%; padding:12px 16px; border-radius:18px; line-height:1.5; 
-      word-wrap:break-word; position:relative; animation:fadeIn 0.3s ease; 
-    }
-    .sent { 
-      align-self:flex-end; background:#d1e9ff; border-bottom-right-radius:6px; 
-      box-shadow:0 2px 6px rgba(0,0,0,0.15); 
-    }
-    .received { 
-      align-self:flex-start; background:#f1f1f1; border-bottom-left-radius:6px; 
-      box-shadow:0 2px 6px rgba(0,0,0,0.1); 
-    }
-    .message-info { 
-      font-size:11px; color:#555; margin-top:6px; opacity:0.7; 
-    }
-    .message img, .message video, .message audio { 
-      max-width:230px; border-radius:12px; margin-top:8px; 
-    }
-    video, audio { width:100%; border-radius:10px; margin-top:6px; }
-
-    .input-area { 
-      display:flex; padding:12px 14px; background:white; border-top:1px solid#ddd; 
-      gap:10px; align-items:center; 
-    }
-    #message-input { 
-      flex:1; padding:14px 18px; border:1px solid#ccc; border-radius:30px; 
-      outline:none; font-size:15px; transition:0.2s; 
-    }
-    #message-input:focus { border-color:#6a11cb; box-shadow:0 0 6px rgba(106,17,203,0.2); }
-
-    .attach-btn { 
-      background:linear-gradient(135deg,#6a11cb,#2575fc); 
-      color:white; border:none; width:42px; height:42px; border-radius:50%; 
-      cursor:pointer; display:flex; align-items:center; justify-content:center; 
-      font-size:18px; transition:0.3s; 
-    }
-    .attach-btn:hover { transform:scale(1.1); opacity:0.9; }
-
-    #send-btn { 
-      width:50px; height:50px; font-size:20px; 
-      background:linear-gradient(135deg, #6a11cb, #2575fc); 
-      border:none; border-radius:50%; color:white; 
-      display:flex; align-items:center; justify-content:center; 
-      cursor:pointer; transition:0.3s; 
-    }
-    #send-btn:hover { transform:scale(1.1); box-shadow:0 4px 12px rgba(106,17,203,0.3); }
-
-    .login-screen { 
-      display:flex; flex-direction:column; justify-content:center; align-items:center; 
-      height:100vh; background:linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); 
-      padding:20px; color:white; text-align:center; 
-    }
-    .login-screen h2 { font-size:28px; margin-bottom:30px; }
-    .login-screen input { 
-      padding:14px; font-size:16px; border:none; border-radius:30px; 
-      width:80%; max-width:320px; margin-bottom:20px; text-align:center; 
-      outline:none; box-shadow:0 4px 10px rgba(0,0,0,0.15); 
-    }
-    .login-screen button { 
-      padding:14px 36px; background:white; color:#2575fc; border:none; 
-      border-radius:30px; font-size:16px; cursor:pointer; font-weight:600; 
-      transition:0.3s; 
-    }
-    .login-screen button:hover { background:#f0f2f5; }
-    @media (max-width: 600px) {
-      .input-area { flex-direction:row; flex-wrap:wrap; }
-      #message-input { flex:1 1 100%; order:2; }
-      .attach-buttons { order:1; display:flex; gap:8px; }
-    }
-    @keyframes fadeIn {
-      from {opacity:0; transform:translateY(10px);}
-      to {opacity:1; transform:translateY(0);}
-    }
-  </style>
-</head>
-<body>
-  <!-- Login Screen -->
-  <div id="login-screen" class="login-screen">
-    <h2>🥔 mutlu yasayan patatesler</h2>
-    <input type="text" id="username-input" placeholder="Enter your name" maxlength="20" autocomplete="off" />
-    <button onclick="setUsername()">Join Chat</button>
-  </div>
-
-  <!-- Chat Screen -->
-  <div id="chat-container" class="chat-container" style="display:none;">
-    <div class="chat-header">
-      <span>mutlu yasayan patatesler</span>
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-    <div id="messages" class="messages"></div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Living Potatoes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     
-    <div class="input-area">
-      <div class="attach-buttons">
-        <button class="attach-btn" onclick="document.getElementById('file-input').click()">📎</button>
-        <button class="attach-btn" onclick="startRecording()">🎤</button>
-        <button class="attach-btn" id="stop-btn" onclick="stopRecording()" style="display:none;">⏹️</button>
-      </div>
-      <input type="file" id="file-input" accept="image/*,video/*,audio/*" onchange="sendMedia(event)" />
-      <input type="text" id="message-input" placeholder="Type a message..." />
-      <button id="send-btn" onclick="sendMessage()">➤</button>
-    </div>
-  </div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-
-  <script>
-    // 🔥 Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBfa-DU3esel55NPsyqv9KxF9Si4ZWeSDg",
-      authDomain: "bujjer-fc359.firebaseapp.com",
-      databaseURL: "https://bujjer-fc359-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "bujjer-fc359",
-      storageBucket: "bujjer-fc359.appspot.com",
-      messagingSenderId: "542057226185",
-      appId: "1:542057226185:web:7d0d7e70c0d84862531218"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const storage = firebase.storage();
-
-    // DOM
-    const loginScreen = document.getElementById('login-screen');
-    const chatContainer = document.getElementById('chat-container');
-    const usernameInput = document.getElementById('username-input');
-    const messageInput = document.getElementById('message-input');
-    const messagesDiv = document.getElementById('messages');
-
-    // Voice recording
-    let mediaRecorder;
-    let audioChunks = [];
-
-    window.onload = () => {
-      const name = localStorage.getItem('username');
-      if (name) showChat(name);
-    };
-
-    function setUsername() {
-      const name = usernameInput.value.trim();
-      if (name) {
-        localStorage.setItem('username', name);
-        showChat(name);
-      } else {
-        alert("Please enter a name!");
-      }
-    }
-
-    function showChat(name) {
-      loginScreen.style.display = 'none';
-      chatContainer.style.display = 'flex';
-      messageInput.focus();
-      loadMessages();
-    }
-
-    function logout() {
-      localStorage.removeItem('username');
-      chatContainer.style.display = 'none';
-      loginScreen.style.display = 'flex';
-      usernameInput.value = '';
-      usernameInput.focus();
-    }
-
-    // === TEXT MESSAGES ===
-    function sendMessage() {
-      const text = messageInput.value.trim();
-      const user = localStorage.getItem('username');
-      if (text && user) {
-        db.ref('chats/mutlu-patatesler/messages').push({
-          type: 'text',
-          text,
-          username: user,
-          timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-        messageInput.value = '';
-      }
-    }
-
-    // === MEDIA (PHOTO/VIDEO/AUDIO) ===
-    function sendMedia(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const user = localStorage.getItem('username');
-      if (!user) return;
-
-      const type = file.type.startsWith('image') ? 'image' : 
-                   file.type.startsWith('video') ? 'video' : 
-                   file.type.startsWith('audio') ? 'audio' : null;
-      
-      if (!type) return;
-
-      const filePath = `media/${Date.now()}_${file.name}`;
-      const uploadTask = storage.ref(filePath).put(file);
-
-      uploadTask.on('state_changed', null, (err) => {
-        alert('Upload failed: ' + err.message);
-      }, () => {
-        uploadTask.snapshot.ref.getDownloadURL().then(url => {
-          db.ref('chats/mutlu-patatesler/messages').push({
-            type,
-            url,
-            username: user,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-          });
-        });
-      });
-      e.target.value = '';
-    }
-
-    // === VOICE MESSAGES ===
-    async function startRecording() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+        * { 
+            margin:0; padding:0; box-sizing:border-box; 
+        }
+        body {
+            font-family: 'Comic Neue', cursive;
+            background-color: #f9f7f0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .potato-bg {
+            background-image: radial-gradient(circle, #f5e7c1 0%, #f0d9a4 100%);
+        }
+        .chat-bubble {
+            border-radius: 20px 20px 20px 0;
+        }
+        .emoji-rain {
+            position: absolute;
+            pointer-events: none;
+            animation: fall linear infinite;
+            z-index: 0;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
         
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-        mediaRecorder.onstop = async () => {
-          const blob = new Blob(audioChunks, { type: 'audio/mp3' });
-          const user = localStorage.getItem('username');
-          if (!user) return;
+        /* Chat specific styles */
+        .chat-container { 
+            max-width: 850px; 
+            margin: 20px auto; 
+            width: 100%; 
+            height: calc(100vh - 40px); 
+            display: flex; 
+            flex-direction: column; 
+            background: white; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12); 
+            position: relative;
+            z-index: 1;
+        }
+        .chat-header { 
+            background: linear-gradient(135deg, #f59e0b, #eab308);
+            color: #92400e; 
+            padding: 18px 22px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+        }
+        .messages { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+            background: linear-gradient(180deg, #fefce8 0%, #fef3c7 100%); 
+        }
+        .message { 
+            max-width: 70%; 
+            padding: 12px 16px; 
+            border-radius: 18px; 
+            line-height: 1.5; 
+            word-wrap: break-word; 
+            position: relative; 
+            animation: fadeIn 0.3s ease; 
+        }
+        .sent { 
+            align-self: flex-end; 
+            background: #fef08a; 
+            border-bottom-right-radius: 6px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15); 
+            color: #92400e;
+        }
+        .received { 
+            align-self: flex-start; 
+            background: #fef3c7; 
+            border-bottom-left-radius: 6px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+            color: #92400e;
+        }
+        .message-info { 
+            font-size: 11px; 
+            color: #92400e; 
+            margin-top: 6px; 
+            opacity: 0.7; 
+        }
+        .message img, .message video, .message audio { 
+            max-width: 230px; 
+            border-radius: 12px; 
+            margin-top: 8px; 
+        }
+        video, audio { 
+            width: 100%; 
+            border-radius: 10px; 
+            margin-top: 6px; 
+        }
+        .input-area { 
+            display: flex; 
+            padding: 12px 14px; 
+            background: white; 
+            border-top: 1px solid #fef3c7; 
+            gap: 10px; 
+            align-items: center; 
+        }
+        #message-input { 
+            flex: 1; 
+            padding: 14px 18px; 
+            border: 1px solid #fef3c7; 
+            border-radius: 30px; 
+            outline: none; 
+            font-size: 15px; 
+            transition: 0.2s; 
+            background: #fefce8;
+            color: #92400e;
+        }
+        #message-input:focus { 
+            border-color: #f59e0b; 
+            box-shadow: 0 0 6px rgba(245, 158, 11, 0.2); 
+        }
+        .attach-btn { 
+            background: linear-gradient(135deg, #f59e0b, #eab308);
+            color: #92400e; 
+            border: none; 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 18px; 
+            transition: 0.3s; 
+        }
+        .attach-btn:hover { 
+            transform: scale(1.1); 
+            opacity: 0.9; 
+        }
+        #send-btn { 
+            width: 50px; 
+            height: 50px; 
+            font-size: 20px; 
+            background: linear-gradient(135deg, #f59e0b, #eab308);
+            border: none; 
+            border-radius: 50%; 
+            color: #92400e; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
+        #send-btn:hover { 
+            transform: scale(1.1); 
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); 
+        }
+        .login-screen { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
+            padding: 20px; 
+            color: #92400e; 
+            text-align: center; 
+            position: relative;
+            z-index: 1;
+        }
+        .login-screen h2 { 
+            font-size: 28px; 
+            margin-bottom: 30px; 
+        }
+        .login-screen input { 
+            padding: 14px; 
+            font-size: 16px; 
+            border: none; 
+            border-radius: 30px; 
+            width: 80%; 
+            max-width: 320px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            outline: none; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+            background: #fefce8;
+            color: #92400e;
+        }
+        .login-screen button { 
+            padding: 14px 36px; 
+            background: #fefce8; 
+            color: #92400e; 
+            border: none; 
+            border-radius: 30px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: 0.3s; 
+        }
+        .login-screen button:hover { 
+            background: #fef3c7; 
+        }
+        @media (max-width: 600px) {
+            .input-area { 
+                flex-direction: row; 
+                flex-wrap: wrap; 
+            }
+            #message-input { 
+                flex: 1 1 100%; 
+                order: 2; 
+            }
+            .attach-buttons { 
+                order: 1; 
+                display: flex; 
+                gap: 8px; 
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0; 
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+        
+        /* Potato profile styling */
+        .potato-profile {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .potato-avatar {
+            position: relative;
+        }
+        .potato-avatar img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #f59e0b;
+        }
+        .potato-emoji {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #f59e0b;
+            color: #92400e;
+            font-size: 20px;
+            padding: 5px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="potato-bg">
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+        <div class="potato-profile">
+            <div class="potato-avatar">
+                <img src="http://static.photos/food/320x240/42" alt="Happy Potato">
+                <span class="potato-emoji">🥔</span>
+            </div>
+        </div>
+        
+        <h2>🥔 Happy Living Potatoes</h2>
+        <p class="text-yellow-900 mb-6">Where potatoes live their best lives</p>
+        
+        <input type="text" id="username-input" placeholder="Enter your name" maxlength="20" autocomplete="off" />
+        <button onclick="setUsername()">Join the Potato Party!</button>
+    </div>
 
-          const filePath = `media/voice_${Date.now()}.mp3`;
-          const uploadTask = storage.ref(filePath).put(blob);
-          uploadTask.on('state_changed', null, (err) => {
-            alert('Voice upload failed');
-          }, () => {
-            uploadTask.snapshot.ref.getDownloadURL().then(url => {
-              db.ref('chats/mutlu-patatesler/messages').push({
-                type: 'audio',
-                url,
-                username: user,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-              });
-            });
-          });
+    <!-- Chat Screen -->
+    <div id="chat-container" class="chat-container" style="display:none;">
+        <div class="chat-header">
+            <div class="flex items-center">
+                <i data-feather="home" class="text-yellow-900 mr-2"></i>
+                <span>Happy Living Potatoes</span>
+            </div>
+            <button class="logout-btn bg-yellow-500 hover:bg-yellow-600 text-yellow-900 px-4 py-2 rounded-full text-sm font-medium transition" onclick="logout()">
+                Logout
+            </button>
+        </div>
+        
+        <div id="messages" class="messages"></div>
+        
+        <div class="input-area">
+            <div class="attach-buttons">
+                <button class="attach-btn" onclick="document.getElementById('file-input').click()">
+                    <i data-feather="paperclip"></i>
+                </button>
+                <button class="attach-btn" onclick="startRecording()">
+                    <i data-feather="mic"></i>
+                </button>
+                <button class="attach-btn" id="stop-btn" onclick="stopRecording()" style="display:none;">
+                    <i data-feather="square"></i>
+                </button>
+            </div>
+            <input type="file" id="file-input" accept="image/*,video/*,audio/*" onchange="sendMedia(event)" style="display:none;" />
+            <input type="text" id="message-input" placeholder="Type a message..." />
+            <button id="send-btn" onclick="sendMessage()">
+                <i data-feather="send"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Emojis -->
+    <div id="emoji-container" class="fixed top-0 left-0 w-full h-full pointer-events-none"></div>
+
+    <script>
+        // 🔥 Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBfa-DU3esel55NPsyqv9KxF9Si4ZWeSDg",
+            authDomain: "bujjer-fc359.firebaseapp.com",
+            databaseURL: "https://bujjer-fc359-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "bujjer-fc359",
+            storageBucket: "bujjer-fc359.appspot.com",
+            messagingSenderId: "542057226185",
+            appId: "1:542057226185:web:7d0d7e70c0d84862531218"
         };
 
-        mediaRecorder.start();
-        document.querySelectorAll('.attach-btn')[1].style.display = 'none';
-        document.getElementById('stop-btn').style.display = 'flex';
-      } catch (err) {
-        alert('Microphone access denied. Please allow mic permission.');
-      }
-    }
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const storage = firebase.storage();
 
-    function stopRecording() {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-        mediaRecorder.stream.getTracks().forEach(track => track.stop());
-      }
-      document.querySelectorAll('.attach-btn')[1].style.display = 'flex';
-      document.getElementById('stop-btn').style.display = 'none';
-    }
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const chatContainer = document.getElementById('chat-container');
+        const usernameInput = document.getElementById('username-input');
+        const messageInput = document.getElementById('message-input');
+        const messagesDiv = document.getElementById('messages');
 
-    // === ENTER KEY ===
-    messageInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
+        // Voice recording variables
+        let mediaRecorder;
+        let audioChunks = [];
 
-    // === LOAD MESSAGES ===
-    function loadMessages() {
-      db.ref('chats/mutlu-patatesler/messages').on('value', snap => {
-        messagesDiv.innerHTML = '';
-        const data = snap.val();
-        if (!data) return;
+        // Initialize on page load
+        window.onload = () => {
+            const name = localStorage.getItem('username');
+            if (name) showChat(name);
+            
+            // Initialize feather icons
+            feather.replace();
+            
+            // Start emoji rain
+            setInterval(createEmoji, 300);
+        };
 
-        const msgs = Object.entries(data)
-          .map(([id, msg]) => ({ id, ...msg }))
-          .sort((a, b) => a.timestamp - b.timestamp);
+        // Generate falling emojis
+        function createEmoji() {
+            const emoji = document.createElement('div');
+            emoji.className = 'emoji-rain';
+            emoji.innerHTML = ['🥔', '🍟', '🥔', '🥗', '🥔'][Math.floor(Math.random() * 5)];
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            emoji.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.getElementById('emoji-container').appendChild(emoji);
+            
+            setTimeout(() => {
+                emoji.remove();
+            }, 5000);
+        }
 
-        msgs.forEach(msg => {
-          const time = new Date(msg.timestamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-          const isSent = msg.username === localStorage.getItem('username');
-          const div = document.createElement('div');
-          div.className = `message ${isSent ? 'sent' : 'received'}`;
+        // User authentication functions
+        function setUsername() {
+            const name = usernameInput.value.trim();
+            if (name) {
+                localStorage.setItem('username', name);
+                showChat(name);
+            } else {
+                alert("Please enter a name!");
+            }
+        }
 
-          if (msg.type === 'text') {
-            div.innerHTML = `<div>${msg.text}</div><div class="message-info">${msg.username} • ${time}</div>`;
-          } else if (msg.type === 'image') {
-            div.innerHTML = `<img src="${msg.url}" alt="Image" /><div class="message-info">${msg.username} • ${time}</div>`;
-          } else if (msg.type === 'video') {
-            div.innerHTML = `<video controls src="${msg.url}"></video><div class="message-info">${msg.username} • ${time}</div>`;
-          } else if (msg.type === 'audio') {
-            div.innerHTML = `<audio controls src="${msg.url}"></audio><div class="message-info">${msg.username} • ${time}</div>`;
-          }
-          messagesDiv.appendChild(div);
+        function showChat(name) {
+            loginScreen.style.display = 'none';
+            chatContainer.style.display = 'flex';
+            messageInput.focus();
+            loadMessages();
+            feather.replace();
+        }
+
+        function logout() {
+            localStorage.removeItem('username');
+            chatContainer.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            usernameInput.value = '';
+            usernameInput.focus();
+            feather.replace();
+        }
+
+        // === TEXT MESSAGES ===
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            const user = localStorage.getItem('username');
+            if (text && user) {
+                db.ref('chats/mutlu-patatesler/messages').push({
+                    type: 'text',
+                    text,
+                    username: user,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                messageInput.value = '';
+            }
+        }
+
+        // === MEDIA (PHOTO/VIDEO/AUDIO) ===
+        function sendMedia(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const user = localStorage.getItem('username');
+            if (!user) return;
+
+            const type = file.type.startsWith('image') ? 'image' : 
+                         file.type.startsWith('video') ? 'video' : 
+                         file.type.startsWith('audio') ? 'audio' : null;
+            
+            if (!type) return;
+
+            const filePath = `media/${Date.now()}_${file.name}`;
+            const uploadTask = storage.ref(filePath).put(file);
+
+            uploadTask.on('state_changed', null, (err) => {
+                alert('Upload failed: ' + err.message);
+            }, () => {
+                uploadTask.snapshot.ref.getDownloadURL().then(url => {
+                    db.ref('chats/mutlu-patatesler/messages').push({
+                        type,
+                        url,
+                        username: user,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                });
+            });
+            e.target.value = '';
+        }
+
+        // === VOICE MESSAGES ===
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = async () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    const user = localStorage.getItem('username');
+                    if (!user) return;
+
+                    const filePath = `media/voice_${Date.now()}.mp3`;
+                    const uploadTask = storage.ref(filePath).put(blob);
+                    uploadTask.on('state_changed', null, (err) => {
+                        alert('Voice upload failed');
+                    }, () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then(url => {
+                            db.ref('chats/mutlu-patatesler/messages').push({
+                                type: 'audio',
+                                url,
+                                username: user,
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            });
+                        });
+                    });
+                };
+
+                mediaRecorder.start();
+                document.querySelectorAll('.attach-btn')[1].style.display = 'none';
+                document.getElementById('stop-btn').style.display = 'flex';
+                feather.replace();
+            } catch (err) {
+                alert('Microphone access denied. Please allow mic permission.');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+            document.querySelectorAll('.attach-btn')[1].style.display = 'flex';
+            document.getElementById('stop-btn').style.display = 'none';
+            feather.replace();
+        }
+
+        // === ENTER KEY ===
+        messageInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         });
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      });
-    }
-  </script>
+
+        // === LOAD MESSAGES ===
+        function loadMessages() {
+            db.ref('chats/mutlu-patatesler/messages').on('value', snap => {
+                messagesDiv.innerHTML = '';
+                const data = snap.val();
+                if (!data) return;
+
+                const msgs = Object.entries(data)
+                    .map(([id, msg]) => ({ id, ...msg }))
+                    .sort((a, b) => a.timestamp - b.timestamp);
+
+                msgs.forEach(msg => {
+                    const time = new Date(msg.timestamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+                    const isSent = msg.username === localStorage.getItem('username');
+                    const div = document.createElement('div');
+                    div.className = `message ${isSent ? 'sent' : 'received'}`;
+
+                    if (msg.type === 'text') {
+                        div.innerHTML = `<div>${msg.text}</div><div class="message-info">${msg.username} • ${time}</div>`;
+                    } else if (msg.type === 'image') {
+                        div.innerHTML = `<img src="${msg.url}" alt="Image" /><div class="message-info">${msg.username} • ${time}</div>`;
+                    } else if (msg.type === 'video') {
+                        div.innerHTML = `<video controls src="${msg.url}"></video><div class="message-info">${msg.username} • ${time}</div>`;
+                    } else if (msg.type === 'audio') {
+                        div.innerHTML = `<audio controls src="${msg.url}"></audio><div class="message-info">${msg.username} • ${time}</div>`;
+                    }
+                    messagesDiv.appendChild(div);
+                });
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+        }
+    </script>
 </body>
 </html>
